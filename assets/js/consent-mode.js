@@ -38,6 +38,10 @@
 	if ( ! stored || stored.v !== cfg.version || ! stored.c ) {
 		return;
 	}
+	// GPC switched on after an opt-in made without it: stay denied (consent.js records the reject).
+	if ( cfg.gpc && navigator.globalPrivacyControl === true && ! stored.g ) {
+		return;
+	}
 	var update = {};
 	var cats = cfg.categories || {};
 	Object.keys( cats ).forEach( function ( slug ) {

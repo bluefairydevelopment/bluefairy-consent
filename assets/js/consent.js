@@ -144,11 +144,20 @@
 	 * Run scripts held as <script type="text/plain" data-bfc-category="slug">.
 	 */
 	function activateScripts( choices ) {
-		var held = document.querySelectorAll( 'script[type="text/plain"][data-bfc-category]:not([data-bfc-done])' );
-		Array.prototype.forEach.call( held, function ( old ) {
-			if ( ! choices[ old.getAttribute( 'data-bfc-category' ) ] ) {
+		var held = Array.prototype.filter.call(
+			document.querySelectorAll( 'script[type="text/plain"][data-bfc-category]:not([data-bfc-done])' ),
+			function ( old ) {
+				return !! choices[ old.getAttribute( 'data-bfc-category' ) ];
+			}
+		);
+		// One at a time, in document order: an external script that is not
+		// async must finish loading before the next held script runs.
+		( function next( i ) {
+			if ( i >= held.length ) {
 				return;
 			}
+			var old = held[ i ];
+			old.setAttribute( 'data-bfc-done', '1' );
 			var s = document.createElement( 'script' );
 			Array.prototype.forEach.call( old.attributes, function ( a ) {
 				if ( a.name === 'type' || a.name.indexOf( 'data-bfc-' ) === 0 ) {
@@ -161,16 +170,24 @@
 				s.type = type;
 			}
 			var src = old.getAttribute( 'data-bfc-src' );
+			var wait = false;
 			if ( src ) {
-				// Keep document order unless the original was async.
 				s.async = old.hasAttribute( 'async' );
+				wait = ! s.async;
+				if ( wait ) {
+					s.onload = s.onerror = function () {
+						next( i + 1 );
+					};
+				}
 				s.src = src;
 			} else {
 				s.text = old.text;
 			}
-			old.setAttribute( 'data-bfc-done', '1' );
 			old.parentNode.insertBefore( s, old.nextSibling );
-		} );
+			if ( ! wait ) {
+				next( i + 1 );
+			}
+		}( 0 ) );
 	}
 
 	function apply( choices ) {
