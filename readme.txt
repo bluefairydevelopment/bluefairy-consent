@@ -44,6 +44,10 @@ Yes. Nothing on the server depends on the visitor's cookie.
 
 Remove it there and enter the ID here, or wrap that plugin's tag in `type="text/plain" data-bfc-category="analytics"`. Otherwise it loads before consent.
 
+== Screenshots ==
+
+1. The banner: Accept All and Reject All side by side, same size and colour (Customize appears with Pro).
+
 == Changelog ==
 
 = 1.0.0 =
