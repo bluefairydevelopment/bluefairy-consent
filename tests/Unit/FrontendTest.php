@@ -136,6 +136,38 @@ final class FrontendTest extends TestCase {
 		$this->assertFalse( get_option( Settings::OPTION ) );
 	}
 
+	public function test_uninstall_on_multisite_cleans_every_site(): void {
+		$GLOBALS['bfct']['multisite'] = true;
+		$GLOBALS['bfct']['sites']     = [
+			1 => [ Settings::OPTION => [ 'title' => 'one' ], 'other' => 'keep' ],
+			2 => [ Settings::OPTION => [ 'title' => 'two' ] ],
+			3 => [ Settings::OPTION => [ 'title' => 'three' ] ],
+		];
+		$GLOBALS['bfct']['options'] = $GLOBALS['bfct']['sites'][1];
+		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+			define( 'WP_UNINSTALL_PLUGIN', true );
+		}
+		require dirname( __DIR__, 2 ) . '/uninstall.php';
+		bfconsent_test_select_blog( 1 ); // Flush site 1's live store into the per-site map.
+		foreach ( [ 1, 2, 3 ] as $id ) {
+			$this->assertArrayNotHasKey( Settings::OPTION, $GLOBALS['bfct']['sites'][ $id ], 'site ' . $id );
+		}
+		$this->assertSame( 'keep', $GLOBALS['bfct']['sites'][1]['other'] );
+		$this->assertSame( 0, $GLOBALS['bfct']['get_sites_args']['number'] );
+		$this->assertSame( [], $GLOBALS['bfct']['blogstack'], 'every switch_to_blog restored' );
+		$this->assertSame( 1, $GLOBALS['bfct']['blog'] );
+	}
+
+	public function test_uninstall_on_single_site_does_not_switch(): void {
+		update_option( Settings::OPTION, [ 'title' => 'x' ] );
+		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+			define( 'WP_UNINSTALL_PLUGIN', true );
+		}
+		require dirname( __DIR__, 2 ) . '/uninstall.php';
+		$this->assertFalse( get_option( Settings::OPTION ) );
+		$this->assertSame( [], $GLOBALS['bfct']['switches'] );
+	}
+
 	public function test_entry_file_defines_constants_and_hooks_boot(): void {
 		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/bluefairy-consent.php' );
 		$this->assertStringContainsString( "define( 'BFCONSENT_VERSION', '1.0.0' );", $src );

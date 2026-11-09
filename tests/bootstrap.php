@@ -70,9 +70,46 @@ function bfconsent_test_reset(): void {
 		'cli'       => [],
 		'die'       => null,
 		'time'      => null,
+		'multisite' => false,
+		'blog'      => 1,
+		'blogstack' => [],
+		'sites'     => [],
+		'switches'  => [],
 	];
 }
 bfconsent_test_reset();
+
+// Multisite: each site has its own option store; switch_to_blog swaps it in
+// and moves $wpdb->prefix the way core does (wp_ for site 1, wp_N_ otherwise).
+function is_multisite(): bool { return (bool) $GLOBALS['bfct']['multisite']; }
+function get_sites( array $args = [] ): array {
+	$GLOBALS['bfct']['get_sites_args'] = $args;
+	$ids = array_keys( $GLOBALS['bfct']['sites'] );
+	return ( $args['fields'] ?? '' ) === 'ids' ? $ids : array_map( static fn( $id ) => (object) [ 'blog_id' => $id ], $ids );
+}
+function bfconsent_test_select_blog( int $id ): void {
+	$t = &$GLOBALS['bfct'];
+	$t['sites'][ $t['blog'] ] = $t['options'];
+	$t['blog']    = $id;
+	$t['options'] = $t['sites'][ $id ] ?? [];
+	if ( isset( $GLOBALS['wpdb'] ) && is_object( $GLOBALS['wpdb'] ) && property_exists( $GLOBALS['wpdb'], 'prefix' ) ) {
+		$GLOBALS['wpdb']->prefix = 1 === $id ? 'wp_' : 'wp_' . $id . '_';
+	}
+}
+function switch_to_blog( int $id ): bool {
+	$GLOBALS['bfct']['blogstack'][] = $GLOBALS['bfct']['blog'];
+	$GLOBALS['bfct']['switches'][]  = $id;
+	bfconsent_test_select_blog( $id );
+	return true;
+}
+function restore_current_blog(): bool {
+	$prev = array_pop( $GLOBALS['bfct']['blogstack'] );
+	if ( null === $prev ) {
+		return false;
+	}
+	bfconsent_test_select_blog( $prev );
+	return true;
+}
 
 // Hooks.
 function add_filter( string $hook, callable|array|string $cb, int $priority = 10, int $args = 1 ): bool {
