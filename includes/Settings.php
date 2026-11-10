@@ -124,7 +124,7 @@ final class Settings {
 	public static function default_cookie_list(): string {
 		$lines = [
 			'_ga|analytics|Google Analytics|Distinguishes visitors|2 years',
-			'_ga_<container-id>|analytics|Google Analytics|Keeps the visit (session) state|2 years',
+			'_ga_*|analytics|Google Analytics|Keeps the visit (session) state|2 years',
 		];
 		/**
 		 * Filter the default cookie list lines.

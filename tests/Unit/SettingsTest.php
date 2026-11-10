@@ -105,6 +105,7 @@ final class SettingsTest extends TestCase {
 		$this->assertStringContainsString( 'Google Consent Mode', (string) $d['message'] );
 		$this->assertStringContainsString( 'list of all the cookies', (string) $d['message'] );
 		$this->assertStringContainsString( '_ga|analytics|Google Analytics', (string) $d['cookie_list'] );
+		$this->assertSame( [ '_ga', '_ga_*' ], array_column( Settings::parse_cookies( (string) $d['cookie_list'] ), 'name' ) );
 	}
 
 	public function test_sanitize_without_cookie_days_defaults_to_182(): void {
