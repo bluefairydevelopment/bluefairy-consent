@@ -41,7 +41,7 @@ final class Categories {
 		$categories = [
 			'necessary' => [
 				'label'       => __( 'Necessary', 'bluefairy-consent' ),
-				'description' => __( 'Needed for the site to work, including remembering your cookie choice. Always on.', 'bluefairy-consent' ),
+				'description' => __( 'Needed for the site to work, including remembering your cookie choice. Always on. These cookies do not require your consent under GDPR.', 'bluefairy-consent' ),
 				'required'    => true,
 				'signals'     => [ 'security_storage' ],
 				'cookies'     => [],

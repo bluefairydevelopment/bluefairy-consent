@@ -36,7 +36,7 @@ final class SettingsTest extends TestCase {
 	}
 
 	public function test_get_returns_one_value_or_empty_string(): void {
-		$this->assertSame( 365, Settings::get( 'cookie_days' ) );
+		$this->assertSame( 182, Settings::get( 'cookie_days' ) );
 		$this->assertSame( '', Settings::get( 'nope' ) );
 	}
 
@@ -98,4 +98,42 @@ final class SettingsTest extends TestCase {
 		$this->assertArrayNotHasKey( 'script', $allowed );
 		$this->assertArrayNotHasKey( 'onclick', $allowed['a'] );
 	}
+
+	public function test_defaults_remember_six_months_and_disclose_consent_mode_and_the_cookie_list(): void {
+		$d = Settings::defaults();
+		$this->assertSame( 182, $d['cookie_days'] );
+		$this->assertStringContainsString( 'Google Consent Mode', (string) $d['message'] );
+		$this->assertStringContainsString( 'list of all the cookies', (string) $d['message'] );
+		$this->assertStringContainsString( '_ga|analytics|Google Analytics', (string) $d['cookie_list'] );
+	}
+
+	public function test_sanitize_without_cookie_days_defaults_to_182(): void {
+		$this->assertSame( 182, Settings::sanitize( [] )['cookie_days'] );
+	}
+
+	public function test_parse_cookies_keeps_five_field_lines_with_a_valid_category(): void {
+		$rows = Settings::parse_cookies( "a|analytics|P|Why|1 day\nbad line\n|analytics|P|W|D\nb|Bad Cat|P|W|D\nc|marketing|<b>Q</b>|W|D" );
+		$this->assertCount( 2, $rows );
+		$this->assertSame( [ 'name' => 'a', 'category' => 'analytics', 'provider' => 'P', 'purpose' => 'Why', 'duration' => '1 day' ], $rows[0] );
+		$this->assertSame( 'Q', $rows[1]['provider'] );
+	}
+
+	public function test_cookies_to_text_round_trips(): void {
+		$text = "a|analytics|P|Why|1 day\nc|marketing|Q|W|D";
+		$this->assertSame( $text, Settings::cookies_to_text( Settings::parse_cookies( $text ) ) );
+	}
+
+	public function test_sanitize_cleans_the_cookie_list_and_keeps_the_default_when_absent(): void {
+		$this->assertSame( 'x|analytics|P|W|D', Settings::sanitize( [ 'cookie_list' => "x|analytics|P|W|D\njunk" ] )['cookie_list'] );
+		$this->assertSame( Settings::default_cookie_list(), Settings::sanitize( [] )['cookie_list'] );
+	}
+
+	public function test_default_cookie_list_is_filterable_and_survives_a_bad_filter(): void {
+		add_filter( 'bfconsent_default_cookie_list', fn( $l ) => array_merge( $l, [ '_fbp|marketing|Meta|Ads|3 months', 'broken' ] ) );
+		$this->assertStringEndsWith( '_fbp|marketing|Meta|Ads|3 months', Settings::default_cookie_list() );
+		bfconsent_test_reset();
+		add_filter( 'bfconsent_default_cookie_list', fn() => 'nope' );
+		$this->assertStringStartsWith( '_ga|analytics', Settings::default_cookie_list() );
+	}
 }
+

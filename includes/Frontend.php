@@ -29,6 +29,7 @@ final class Frontend {
 		add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue' ] );
 		add_action( 'wp_footer', [ self::class, 'print_banner' ], 5 );
 		add_shortcode( 'bluefairy_consent_settings', [ self::class, 'shortcode' ] );
+		add_shortcode( 'bluefairy_consent_cookie_list', [ self::class, 'cookie_list_shortcode' ] );
 	}
 
 	/**
@@ -130,6 +131,7 @@ final class Frontend {
 		$html  = '<div id="bfc-banner" class="bfc bfc--' . esc_attr( $position ) . '" role="region" aria-labelledby="bfc-title" hidden>';
 		$html .= '<h2 id="bfc-title" class="bfc-title" tabindex="-1">' . esc_html( (string) $s['title'] ) . '</h2>';
 		$html .= '<p class="bfc-message">' . wp_kses( (string) $s['message'], Settings::allowed_html() ) . $privacy . '</p>';
+		$html .= '<details class="bfc-cookies"><summary>' . esc_html__( 'Cookie list', 'bluefairy-consent' ) . '</summary>' . self::cookie_table() . '</details>';
 		$html .= $body;
 		$html .= '<div class="bfc-actions">';
 		$html .= '<button type="button" class="bfc-btn" data-bfc-action="reject">' . esc_html( (string) $s['reject_label'] ) . '</button>';
@@ -153,5 +155,57 @@ final class Frontend {
 	public static function shortcode( mixed $atts ): string {
 		$atts = shortcode_atts( [ 'label' => (string) Settings::get( 'settings_label' ) ], is_array( $atts ) ? $atts : [], 'bluefairy_consent_settings' );
 		return '<button type="button" class="bfc-settings-link" data-bfc-open>' . esc_html( (string) $atts['label'] ) . '</button>';
+	}
+
+	/**
+	 * Every cookie the site declares, as rows: the consent cookie first (with
+	 * the configured lifetime), then the cookie list setting, keeping only
+	 * categories that exist (an add-on's category disappears with it).
+	 *
+	 * @return list<array{name: string, category: string, provider: string, purpose: string, duration: string}>
+	 */
+	public static function cookies(): array {
+		$days       = (int) Settings::get( 'cookie_days' );
+		$categories = Categories::all();
+		$rows       = [
+			[
+				'name'     => self::COOKIE,
+				'category' => 'necessary',
+				'provider' => __( 'This site', 'bluefairy-consent' ),
+				'purpose'  => __( 'Remembers your cookie choice', 'bluefairy-consent' ),
+				/* translators: %d: number of days */
+				'duration' => sprintf( _n( '%d day', '%d days', $days, 'bluefairy-consent' ), $days ),
+			],
+		];
+		foreach ( Settings::parse_cookies( (string) Settings::get( 'cookie_list' ) ) as $cookie ) {
+			if ( isset( $categories[ $cookie['category'] ] ) ) {
+				$rows[] = $cookie;
+			}
+		}
+		return $rows;
+	}
+
+	/**
+	 * The cookie table (banner and shortcode).
+	 */
+	public static function cookie_table(): string {
+		$categories = Categories::all();
+		$html       = '<table class="bfc-cookie-table"><thead><tr>';
+		foreach ( [ __( 'Cookie', 'bluefairy-consent' ), __( 'Category', 'bluefairy-consent' ), __( 'Provider', 'bluefairy-consent' ), __( 'Purpose', 'bluefairy-consent' ), __( 'Duration', 'bluefairy-consent' ) ] as $head ) {
+			$html .= '<th scope="col">' . esc_html( $head ) . '</th>';
+		}
+		$html .= '</tr></thead><tbody>';
+		foreach ( self::cookies() as $c ) {
+			$label = $categories[ $c['category'] ]['label'] ?? $c['category'];
+			$html .= '<tr><td><code>' . esc_html( $c['name'] ) . '</code></td><td>' . esc_html( $label ) . '</td><td>' . esc_html( $c['provider'] ) . '</td><td>' . esc_html( $c['purpose'] ) . '</td><td>' . esc_html( $c['duration'] ) . '</td></tr>';
+		}
+		return $html . '</tbody></table>';
+	}
+
+	/**
+	 * [bluefairy_consent_cookie_list] — the cookie table, for a privacy policy page.
+	 */
+	public static function cookie_list_shortcode(): string {
+		return '<div class="bfc-cookie-list">' . self::cookie_table() . '</div>';
 	}
 }
