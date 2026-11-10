@@ -38,6 +38,25 @@ async function setup( page ) {
 	return tags;
 }
 
+/**
+ * Reopen the banner the way a visitor would: the floating button when the
+ * site shows it, otherwise a Cookie settings link to #bfc-settings.
+ *
+ * @param {import('@playwright/test').Page} page
+ */
+async function reopen( page ) {
+	const button = page.locator( '.bfc-reopen' );
+	if ( await button.isVisible() ) {
+		await button.click();
+	} else {
+		await page.locator( 'a[href="#bfc-settings"]' ).first().click();
+	}
+	await expect( page.locator( '#bfc-banner' ) ).toBeVisible();
+}
+
+/** Only the GA4 library requests (a site may also load Tag Manager). */
+const gtagJs = ( tags ) => tags.filter( ( u ) => u.includes( '/gtag/js' ) );
+
 async function consentCommands( page ) {
 	return page.evaluate( () => ( window.dataLayer || [] )
 		.filter( ( e ) => e && e[ 0 ] === 'consent' )
@@ -77,8 +96,8 @@ test( 'Accept grants analytics, stores the choice and loads GA4 only then', asyn
 	expect( tags ).toEqual( [] );
 	await page.locator( '[data-bfc-action="accept"]' ).click();
 	await expect( page.locator( '#bfc-banner' ) ).toBeHidden();
-	await expect.poll( () => tags.length ).toBe( 1 );
-	expect( tags[ 0 ] ).toContain( 'gtag/js?id=' + GA4 );
+	await expect.poll( () => gtagJs( tags ).length ).toBe( 1 );
+	expect( gtagJs( tags )[ 0 ] ).toContain( 'gtag/js?id=' + GA4 );
 	const cmds = await consentCommands( page );
 	expect( cmds[ cmds.length - 1 ] ).toEqual( [ 'update', expect.objectContaining( { analytics_storage: 'granted' } ) ] );
 	const rec = await stored( page );
@@ -87,13 +106,13 @@ test( 'Accept grants analytics, stores the choice and loads GA4 only then', asyn
 	expect( rec.id ).toMatch( /^[0-9a-f-]{36}$/ );
 
 	// Returning visit, same cached HTML: no banner, consent applied in the first head script, GA loads.
-	const tags2 = tags.length;
+	const tags2 = gtagJs( tags ).length;
 	await page.goto( BASE + '/' );
 	await expect( page.locator( '#bfc-banner' ) ).toBeHidden();
-	await expect( page.locator( '.bfc-reopen' ) ).toBeVisible();
+	await expect( page.locator( '.bfc-reopen, a[href="#bfc-settings"]' ).first() ).toBeVisible();
 	const again = await consentCommands( page );
 	expect( again[ 1 ] ).toEqual( [ 'update', expect.objectContaining( { analytics_storage: 'granted' } ) ] );
-	await expect.poll( () => tags.length ).toBe( tags2 + 1 );
+	await expect.poll( () => gtagJs( tags ).length ).toBe( tags2 + 1 );
 } );
 
 test( 'Reject leaves GA unloaded and analytics denied', async ( { page } ) => {
@@ -133,7 +152,7 @@ test( 'reopen button and #bfc-settings reopen the banner; withdrawing deletes an
 		{ name: '_ga_TEST12345', value: 'GS1', domain: '.' + host, path: '/' },
 		{ name: 'keepme', value: '1', domain: host, path: '/' },
 	] );
-	await page.locator( '.bfc-reopen' ).click();
+	await reopen( page );
 	await expect( page.locator( '#bfc-banner' ) ).toBeVisible();
 	await expect( page.locator( '#bfc-title' ) ).toBeFocused();
 	await page.locator( '[data-bfc-action="reject"]' ).click();
@@ -172,7 +191,7 @@ test( 'GPC turned on after an earlier Accept wins; an opt-in made under GPC is k
 	await page.waitForTimeout( 300 );
 	expect( tags.length ).toBe( before );
 	// Explicit opt-in while GPC is on is respected on the next visit.
-	await page.locator( '.bfc-reopen' ).click();
+	await reopen( page );
 	await page.locator( '[data-bfc-action="accept"]' ).click();
 	expect( ( await stored( page ) ).g ).toBe( true );
 	await page.goto( BASE + '/' );
@@ -184,10 +203,10 @@ test( 'withdraw then re-grant on the same page re-enables GA4', async ( { page }
 	await setup( page );
 	await page.goto( BASE + '/' );
 	await page.locator( '[data-bfc-action="accept"]' ).click();
-	await page.locator( '.bfc-reopen' ).click();
+	await reopen( page );
 	await page.locator( '[data-bfc-action="reject"]' ).click();
 	expect( await page.evaluate( ( id ) => window[ 'ga-disable-' + id ], GA4 ) ).toBe( true );
-	await page.locator( '.bfc-reopen' ).click();
+	await reopen( page );
 	await page.locator( '[data-bfc-action="accept"]' ).click();
 	expect( await page.evaluate( ( id ) => window[ 'ga-disable-' + id ], GA4 ) ).toBe( false );
 } );

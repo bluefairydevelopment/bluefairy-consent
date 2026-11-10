@@ -6,5 +6,5 @@ module.exports = {
 	retries: 0,
 	workers: 1,
 	reporter: [ [ 'list' ] ],
-	use: { ignoreHTTPSErrors: true, trace: 'retain-on-failure' },
+	use: { ignoreHTTPSErrors: true, httpCredentials: process.env.BFC_HTTP_USER ? { username: process.env.BFC_HTTP_USER, password: process.env.BFC_HTTP_PASS } : undefined, trace: 'retain-on-failure' },
 };
