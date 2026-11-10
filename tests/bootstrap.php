@@ -75,6 +75,7 @@ function bfconsent_test_reset(): void {
 		'blogstack' => [],
 		'sites'     => [],
 		'switches'  => [],
+		'textdomains' => [],
 	];
 }
 bfconsent_test_reset();
@@ -190,7 +191,11 @@ function set_transient( string $name, mixed $value, int $exp = 0 ): bool {
 }
 
 // i18n and escaping.
-function __( string $t, string $d = 'default' ): string { return $t; }
+function __( string $t, string $d = 'default' ): string { return (string) apply_filters( 'bfconsent_test_gettext', $t, $d ); }
+function load_plugin_textdomain( string $domain, mixed $deprecated = false, string|false $path = false ): bool { $GLOBALS['bfct']['textdomains'][ $domain ] = $path; return true; }
+if ( ! function_exists( 'plugin_basename' ) ) {
+	function plugin_basename( string $file ): string { return basename( dirname( $file ) ) . '/' . basename( $file ); }
+}
 function _n( string $single, string $plural, int $n, string $domain = "default" ): string { return 1 === $n ? $single : $plural; }
 function esc_html__( string $t, string $d = 'default' ): string { return esc_html( $t ); }
 function esc_html_e( string $t, string $d = 'default' ): void { echo esc_html( $t ); }

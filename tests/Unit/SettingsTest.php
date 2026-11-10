@@ -80,7 +80,9 @@ final class SettingsTest extends TestCase {
 				'privacy_url'  => 'https://example.com/privacy',
 			]
 		);
-		$this->assertSame( 'Accept All', $out['accept_label'] );
+		$this->assertArrayNotHasKey( 'accept_label', $out );
+		update_option( Settings::OPTION, $out );
+		$this->assertSame( 'Accept All', Settings::get( 'accept_label' ) );
 		$this->assertSame( 'bottom-right', $out['position'] );
 		$this->assertSame( 'GTM-AB12CD', $out['gtm_id'] );
 		$this->assertSame( '#000', $out['accent_color'] );
@@ -89,7 +91,7 @@ final class SettingsTest extends TestCase {
 
 	public function test_sanitize_of_non_array_returns_defaults_with_checkboxes_off(): void {
 		$out = Settings::sanitize( 'x' );
-		$this->assertSame( 'We respect your privacy', $out['title'] );
+		$this->assertArrayNotHasKey( 'title', $out );
 		$this->assertFalse( $out['respect_gpc'] );
 	}
 
@@ -136,5 +138,28 @@ final class SettingsTest extends TestCase {
 		add_filter( 'bfconsent_default_cookie_list', fn() => 'nope' );
 		$this->assertStringStartsWith( '_ga|analytics', Settings::default_cookie_list() );
 	}
-}
 
+	public function test_sanitize_does_not_store_texts_equal_to_the_default_so_they_follow_the_site_language(): void {
+		$defaults = Settings::defaults();
+		$input    = [];
+		foreach ( Settings::TRANSLATED as $key ) {
+			$input[ $key ] = $defaults[ $key ];
+		}
+		$out = Settings::sanitize( $input );
+		foreach ( Settings::TRANSLATED as $key ) {
+			$this->assertArrayNotHasKey( $key, $out, $key );
+		}
+		update_option( Settings::OPTION, $out );
+		// The site language changes after the save: the default follows it.
+		add_filter( 'bfconsent_test_gettext', static fn( string $t ): string => 'We respect your privacy' === $t ? 'Wir respektieren Ihre Privatsphäre' : $t );
+		$this->assertSame( 'Wir respektieren Ihre Privatsphäre', Settings::get( 'title' ) );
+	}
+
+	public function test_sanitize_stores_customised_texts(): void {
+		$out = Settings::sanitize( [ 'title' => 'Cookies on this site', 'message' => 'Custom <b>message</b>', 'settings_label' => 'Privacy choices' ] );
+		$this->assertSame( 'Cookies on this site', $out['title'] );
+		$this->assertSame( 'Custom <b>message</b>', $out['message'] );
+		$this->assertSame( 'Privacy choices', $out['settings_label'] );
+		$this->assertArrayNotHasKey( 'accept_label', $out );
+	}
+}

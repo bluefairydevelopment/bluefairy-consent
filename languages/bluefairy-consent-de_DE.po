@@ -1,0 +1,225 @@
+# German translation of bluefairy-consent. Draft: review before relying on it.
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: BlueFairy Consent 1.2.0\n"
+"Report-Msgid-Bugs-To: https://bluefairydevelopment.com/contact/\n"
+"Last-Translator: Blue Fairy Development\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"POT-Creation-Date: 2026-11-10T06:04:18+00:00\n"
+"PO-Revision-Date: 2026-11-10 00:00+0000\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: bluefairy-consent\n"
+
+#. Plugin Name of the plugin
+#: bluefairy-consent.php
+msgid "BlueFairy Consent"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: bluefairy-consent.php
+msgid "https://wordpress.bluefairydevelopment.com/product/bluefairy-consent/"
+msgstr ""
+
+#. Description of the plugin
+#: bluefairy-consent.php
+msgid "Cookie consent banner with Accept and Reject given equal weight, Google Consent Mode v2, Global Privacy Control, and Google Analytics 4 / Tag Manager loaded only after consent. Page-cache safe: the decision is made in the browser. No CDN, no account."
+msgstr ""
+
+#. Author of the plugin
+#: bluefairy-consent.php
+msgid "Blue Fairy Development"
+msgstr ""
+
+#. Author URI of the plugin
+#: bluefairy-consent.php
+msgid "https://bluefairydevelopment.com"
+msgstr ""
+
+#: includes/Admin.php:47
+#: includes/Admin.php:48
+#: includes/Admin.php:64
+msgid "Consent"
+msgstr ""
+
+#: includes/Admin.php:65
+msgid "The default wording is a template. Review it, and your privacy policy, with your own legal adviser; it is not legal advice."
+msgstr ""
+
+#: includes/Admin.php:72
+msgid "Message"
+msgstr ""
+
+#: includes/Admin.php:73
+msgid "Privacy policy URL"
+msgstr ""
+
+#: includes/Admin.php:78
+msgid "Position"
+msgstr ""
+
+#: includes/Admin.php:79
+msgid "Google Analytics 4 ID"
+msgstr ""
+
+#: includes/Admin.php:79
+msgid "Loaded only after the visitor allows Analytics."
+msgstr ""
+
+#: includes/Admin.php:80
+msgid "Tag Manager ID"
+msgstr ""
+
+#: includes/Admin.php:80
+msgid "Loaded only after the visitor allows at least one optional category."
+msgstr ""
+
+#: includes/Admin.php:81
+msgid "Remember choice for (days)"
+msgstr ""
+
+#: includes/Admin.php:82
+msgid "Policy version"
+msgstr ""
+
+#: includes/Admin.php:82
+msgid "Raise it to ask every visitor again."
+msgstr ""
+
+#: includes/Admin.php:83
+msgid "Accent colour"
+msgstr ""
+
+#: includes/Admin.php:84
+msgid "Floating settings button"
+msgstr ""
+
+#: includes/Admin.php:84
+msgid "Show a small button that reopens the banner. You can also use the [bluefairy_consent_settings] shortcode or a link to #bfc-settings."
+msgstr ""
+
+#: includes/Admin.php:85
+msgid "Global Privacy Control"
+msgstr ""
+
+#: includes/Admin.php:85
+msgid "Treat a browser GPC signal as Reject All."
+msgstr ""
+
+#: includes/Admin.php:86
+#: includes/Frontend.php:134
+msgid "Cookie list"
+msgstr "Cookie-Liste"
+
+#: includes/Admin.php:86
+msgid "Every cookie your site sets, one per line: name | category | provider | purpose | duration. Shown under Cookie list in the banner and by the [bluefairy_consent_cookie_list] shortcode. The consent cookie is listed automatically. Do not use | inside a field. Keep this list complete: the banner tells visitors it lists all cookies."
+msgstr ""
+
+#: includes/Admin.php:89
+msgid "WooCommerce order attribution"
+msgstr ""
+
+#: includes/Admin.php:89
+msgid "Turn off WooCommerce order attribution."
+msgstr ""
+
+#: includes/Admin.php:89
+msgid "WooCommerce order attribution sets sbjs_* cookies on the first page view, before the visitor has chosen. Tick this to stop it for every visitor, including those who accept: no attribution script, no sbjs_* cookies, and new orders carry no Origin. Checkout is not affected. While this is ticked, WooCommerce > Settings > Advanced > Features shows Order Attribution as off. If you leave attribution on, add the sbjs_* cookies to the Cookie list."
+msgstr ""
+
+#: includes/Admin.php:111
+msgid "Banner title"
+msgstr ""
+
+#: includes/Admin.php:112
+msgid "Accept button"
+msgstr ""
+
+#: includes/Admin.php:113
+msgid "Reject button"
+msgstr ""
+
+#: includes/Admin.php:114
+msgid "Settings link text"
+msgstr ""
+
+#: includes/Categories.php:43
+msgid "Necessary"
+msgstr "Notwendig"
+
+#: includes/Categories.php:44
+msgid "Needed for the site to work, including remembering your cookie choice. Always on. These cookies do not require your consent under GDPR."
+msgstr "Für den Betrieb der Website erforderlich, einschließlich der Speicherung Ihrer Cookie-Auswahl. Immer aktiv. Für diese Cookies ist nach der DSGVO keine Einwilligung erforderlich."
+
+#: includes/Categories.php:50
+msgid "Analytics"
+msgstr "Analyse"
+
+#: includes/Categories.php:51
+msgid "Help us understand how visitors use the site, for example Google Analytics."
+msgstr "Helfen uns zu verstehen, wie Besucher die Website nutzen, zum Beispiel Google Analytics."
+
+#: includes/Frontend.php:114
+msgid "Privacy policy"
+msgstr "Datenschutzerklärung"
+
+#: includes/Frontend.php:174
+msgid "This site"
+msgstr "Diese Website"
+
+#: includes/Frontend.php:175
+msgid "Remembers your cookie choice"
+msgstr "Speichert Ihre Cookie-Auswahl"
+
+#. translators: %d: number of days
+#: includes/Frontend.php:177
+#, php-format
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "%d Tag"
+msgstr[1] "%d Tage"
+
+#: includes/Frontend.php:194
+msgid "Cookie"
+msgstr "Cookie"
+
+#: includes/Frontend.php:194
+msgid "Category"
+msgstr "Kategorie"
+
+#: includes/Frontend.php:194
+msgid "Provider"
+msgstr "Anbieter"
+
+#: includes/Frontend.php:194
+msgid "Purpose"
+msgstr "Zweck"
+
+#: includes/Frontend.php:194
+msgid "Duration"
+msgstr "Dauer"
+
+#: includes/Settings.php:34
+msgid "We respect your privacy"
+msgstr "Wir respektieren Ihre Privatsphäre"
+
+#: includes/Settings.php:35
+msgid "We use cookies to run this site and, with your permission, to measure how it is used. We use Google Consent Mode, which tells Google tags what you have chosen. Choose Accept All to allow analytics cookies or Reject All to decline everything that is not essential. A list of all the cookies we use is available in Cookie settings, where you can change your mind at any time."
+msgstr "Wir verwenden Cookies, um diese Website zu betreiben und, mit Ihrer Erlaubnis, um zu messen, wie sie genutzt wird. Wir verwenden den Google Consent Mode, der Google-Tags mitteilt, was Sie gewählt haben. Wählen Sie „Alle akzeptieren“, um Analyse-Cookies zu erlauben, oder „Alle ablehnen“, um alles abzulehnen, was nicht unbedingt erforderlich ist. Eine Liste aller Cookies, die wir verwenden, finden Sie in den Cookie-Einstellungen, wo Sie Ihre Entscheidung jederzeit ändern können."
+
+#: includes/Settings.php:36
+msgid "Accept All"
+msgstr "Alle akzeptieren"
+
+#: includes/Settings.php:37
+msgid "Reject All"
+msgstr "Alle ablehnen"
+
+#: includes/Settings.php:38
+msgid "Cookie settings"
+msgstr "Cookie-Einstellungen"
