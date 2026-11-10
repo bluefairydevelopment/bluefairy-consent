@@ -3,7 +3,7 @@
  * BlueFairy Consent (free) browser E2E. Run on the AWS test rig:
  *   BFC_BASE=https://wp-testing.test npx playwright test -c tests/e2e
  *
- * The site must have BlueFairy Consent active with GA4 ID G-TEST12345.
+ * The site must have BlueFairy Consent active with GA4 ID BFC_GA4 (default G-TEST12345).
  * Requests to googletagmanager.com are intercepted and recorded, never sent.
  *
  * "Cached page": every navigation after the first is answered from ONE copy
@@ -13,6 +13,7 @@
 const { test, expect } = require( '@playwright/test' );
 
 const BASE = process.env.BFC_BASE || 'https://wp-testing.test';
+const GA4 = process.env.BFC_GA4 || 'G-TEST12345';
 let cachedHtml = '';
 
 test.beforeAll( async ( { request } ) => {
@@ -77,7 +78,7 @@ test( 'Accept grants analytics, stores the choice and loads GA4 only then', asyn
 	await page.locator( '[data-bfc-action="accept"]' ).click();
 	await expect( page.locator( '#bfc-banner' ) ).toBeHidden();
 	await expect.poll( () => tags.length ).toBe( 1 );
-	expect( tags[ 0 ] ).toContain( 'gtag/js?id=G-TEST12345' );
+	expect( tags[ 0 ] ).toContain( 'gtag/js?id=' + GA4 );
 	const cmds = await consentCommands( page );
 	expect( cmds[ cmds.length - 1 ] ).toEqual( [ 'update', expect.objectContaining( { analytics_storage: 'granted' } ) ] );
 	const rec = await stored( page );
@@ -140,7 +141,7 @@ test( 'reopen button and #bfc-settings reopen the banner; withdrawing deletes an
 	expect( names ).not.toContain( '_ga' );
 	expect( names ).not.toContain( '_ga_TEST12345' );
 	expect( names ).toContain( 'keepme' );
-	expect( await page.evaluate( () => window[ 'ga-disable-G-TEST12345' ] ) ).toBe( true );
+	expect( await page.evaluate( ( id ) => window[ 'ga-disable-' + id ], GA4 ) ).toBe( true );
 
 	await page.goto( BASE + '/#bfc-settings' );
 	await expect( page.locator( '#bfc-banner' ) ).toBeVisible();
@@ -185,8 +186,8 @@ test( 'withdraw then re-grant on the same page re-enables GA4', async ( { page }
 	await page.locator( '[data-bfc-action="accept"]' ).click();
 	await page.locator( '.bfc-reopen' ).click();
 	await page.locator( '[data-bfc-action="reject"]' ).click();
-	expect( await page.evaluate( () => window[ 'ga-disable-G-TEST12345' ] ) ).toBe( true );
+	expect( await page.evaluate( ( id ) => window[ 'ga-disable-' + id ], GA4 ) ).toBe( true );
 	await page.locator( '.bfc-reopen' ).click();
 	await page.locator( '[data-bfc-action="accept"]' ).click();
-	expect( await page.evaluate( () => window[ 'ga-disable-G-TEST12345' ] ) ).toBe( false );
+	expect( await page.evaluate( ( id ) => window[ 'ga-disable-' + id ], GA4 ) ).toBe( false );
 } );
