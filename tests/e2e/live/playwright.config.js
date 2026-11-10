@@ -1,1 +1,1 @@
-module.exports = { testDir: __dirname, timeout: 60000, workers: 1, reporter: [ [ 'list' ] ] };
+module.exports = { testDir: __dirname, timeout: 60000, workers: 1, reporter: [ [ 'list' ] ], use: { httpCredentials: process.env.BFC_HTTP_USER ? { username: process.env.BFC_HTTP_USER, password: process.env.BFC_HTTP_PASS } : undefined } };
