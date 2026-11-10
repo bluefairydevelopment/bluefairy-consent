@@ -170,8 +170,8 @@ final class FrontendTest extends TestCase {
 
 	public function test_entry_file_defines_constants_and_hooks_boot(): void {
 		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/bluefairy-consent.php' );
-		$this->assertStringContainsString( "define( 'BFCONSENT_VERSION', '1.0.0' );", $src );
-		$this->assertStringContainsString( 'Version:           1.0.0', $src );
+		$this->assertStringContainsString( "define( 'BFCONSENT_VERSION', '1.1.0' );", $src );
+		$this->assertStringContainsString( 'Version:           1.1.0', $src );
 		$this->assertStringContainsString( "add_action( 'plugins_loaded', [ BlueFairy\\Consent\\Plugin::class, 'boot' ] );", $src );
 	}
 
@@ -185,4 +185,45 @@ final class FrontendTest extends TestCase {
 			$this->assertStringNotContainsString( 'freemius', $text, $file );
 		}
 	}
+
+	public function test_boot_registers_the_cookie_list_shortcode(): void {
+		Plugin::boot();
+		$this->assertSame( [ Frontend::class, 'cookie_list_shortcode' ], $GLOBALS['bfct']['shortcodes']['bluefairy_consent_cookie_list'] );
+	}
+
+	public function test_necessary_description_says_no_consent_needed_under_gdpr(): void {
+		$this->assertStringContainsString( 'These cookies do not require your consent under GDPR.', Categories::all()['necessary']['description'] );
+	}
+
+	public function test_cookies_start_with_the_consent_cookie_at_the_configured_lifetime_and_drop_unknown_categories(): void {
+		update_option( Settings::OPTION, [ 'cookie_days' => 30, 'cookie_list' => "_ga|analytics|Google|Visitors|2 years\n_fbp|marketing|Meta|Ads|3 months" ] );
+		$rows = Frontend::cookies();
+		$this->assertSame( 'bfc_consent', $rows[0]['name'] );
+		$this->assertSame( 'necessary', $rows[0]['category'] );
+		$this->assertSame( '30 days', $rows[0]['duration'] );
+		$this->assertSame( [ 'bfc_consent', '_ga' ], array_column( $rows, 'name' ) );
+		update_option( Settings::OPTION, [ 'cookie_days' => 1 ] );
+		$this->assertSame( '1 day', Frontend::cookies()[0]['duration'] );
+	}
+
+	public function test_cookie_table_escapes_and_labels_categories(): void {
+		update_option( Settings::OPTION, [ 'cookie_list' => '_ga|analytics|Google|Visitors & "sessions"|2 years' ] );
+		$html = Frontend::cookie_table();
+		$this->assertStringContainsString( '<th scope="col">Duration</th>', $html );
+		$this->assertStringContainsString( '<td><code>_ga</code></td><td>Analytics</td><td>Google</td>', $html );
+		$this->assertStringContainsString( 'Visitors &amp; &quot;sessions&quot;', $html );
+		$this->assertStringContainsString( '<td><code>bfc_consent</code></td><td>Necessary</td>', $html );
+	}
+
+	public function test_cookie_list_shortcode_wraps_the_table(): void {
+		$html = Frontend::cookie_list_shortcode();
+		$this->assertStringStartsWith( '<div class="bfc-cookie-list"><table class="bfc-cookie-table">', $html );
+	}
+
+	public function test_banner_contains_the_cookie_list_disclosure(): void {
+		$html = Frontend::banner_html();
+		$this->assertStringContainsString( '<details class="bfc-cookies"><summary>Cookie list</summary><table class="bfc-cookie-table">', $html );
+		$this->assertLessThan( strpos( $html, 'bfc-actions' ), strpos( $html, 'bfc-cookies' ) );
+	}
 }
+

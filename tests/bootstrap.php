@@ -191,6 +191,7 @@ function set_transient( string $name, mixed $value, int $exp = 0 ): bool {
 
 // i18n and escaping.
 function __( string $t, string $d = 'default' ): string { return $t; }
+function _n( string $single, string $plural, int $n, string $domain = "default" ): string { return 1 === $n ? $single : $plural; }
 function esc_html__( string $t, string $d = 'default' ): string { return esc_html( $t ); }
 function esc_html_e( string $t, string $d = 'default' ): void { echo esc_html( $t ); }
 function esc_html( mixed $t ): string { return htmlspecialchars( (string) $t, ENT_QUOTES, 'UTF-8' ); }
