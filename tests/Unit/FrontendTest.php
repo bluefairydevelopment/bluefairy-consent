@@ -25,6 +25,12 @@ final class FrontendTest extends TestCase {
 		$this->assertNotFalse( has_action( 'admin_menu', [ Admin::class, 'menu' ] ) );
 		$this->assertArrayHasKey( 'bluefairy_consent_settings', $GLOBALS['bfct']['shortcodes'] );
 		$this->assertContains( 'bfconsent_loaded', $GLOBALS['bfct']['actions'] );
+		$this->assertNotFalse( has_action( 'init', [ Plugin::class, 'load_textdomain' ] ) );
+	}
+
+	public function test_load_textdomain_points_at_the_bundled_languages_folder(): void {
+		Plugin::load_textdomain();
+		$this->assertSame( basename( BFCONSENT_DIR ) . '/languages', $GLOBALS['bfct']['textdomains']['bluefairy-consent'] );
 	}
 
 	public function test_categories_default_to_necessary_and_analytics(): void {

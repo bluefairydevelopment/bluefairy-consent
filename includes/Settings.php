@@ -17,6 +17,13 @@ final class Settings {
 	public const OPTION = 'bfconsent_settings';
 
 	/**
+	 * Visitor-facing texts that have a translated default. A saved value equal
+	 * to the default is not stored, so the default keeps following the site
+	 * language.
+	 */
+	public const TRANSLATED = [ 'title', 'message', 'accept_label', 'reject_label', 'settings_label' ];
+
+	/**
 	 * Default settings. Wording is a template for the site owner to review with
 	 * their own legal adviser; it is not legal advice.
 	 *
@@ -96,6 +103,12 @@ final class Settings {
 		$out['cookie_list']    = isset( $input['cookie_list'] ) ? self::cookies_to_text( self::parse_cookies( (string) $input['cookie_list'] ) ) : (string) $out['cookie_list'];
 
 		$out['disable_wc_order_attribution'] = ! empty( $input['disable_wc_order_attribution'] );
+		$defaults                            = self::defaults();
+		foreach ( self::TRANSLATED as $key ) {
+			if ( $out[ $key ] === $defaults[ $key ] ) {
+				unset( $out[ $key ] );
+			}
+		}
 		return $out;
 	}
 
