@@ -84,7 +84,7 @@ bfconsent_test_reset();
 function is_multisite(): bool { return (bool) $GLOBALS['bfct']['multisite']; }
 function get_sites( array $args = [] ): array {
 	$GLOBALS['bfct']['get_sites_args'] = $args;
-	$ids = array_keys( $GLOBALS['bfct']['sites'] );
+	$ids = isset( $GLOBALS['bfct']['site_ids'] ) ? array_values( $GLOBALS['bfct']['site_ids'] ) : array_keys( $GLOBALS['bfct']['sites'] );
 	return ( $args['fields'] ?? '' ) === 'ids' ? $ids : array_map( static fn( $id ) => (object) [ 'blog_id' => $id ], $ids );
 }
 function bfconsent_test_select_blog( int $id ): void {
