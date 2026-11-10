@@ -39,6 +39,7 @@ final class Settings {
 			'respect_gpc'    => true,
 			'accent_color'   => '#1863dc',
 			'cookie_list'    => self::default_cookie_list(),
+			'disable_wc_order_attribution' => false,
 		];
 	}
 
@@ -90,6 +91,7 @@ final class Settings {
 		$out['policy_version'] = max( 1, (int) ( $input['policy_version'] ?? 1 ) );
 		$out['reopen_button']  = ! empty( $input['reopen_button'] );
 		$out['respect_gpc']    = ! empty( $input['respect_gpc'] );
+		$out['disable_wc_order_attribution'] = ! empty( $input['disable_wc_order_attribution'] );
 		$color                 = sanitize_hex_color( (string) ( $input['accent_color'] ?? '' ) );
 		$out['accent_color']   = $color ? $color : '#1863dc';
 		$out['cookie_list']    = isset( $input['cookie_list'] ) ? self::cookies_to_text( self::parse_cookies( (string) $input['cookie_list'] ) ) : (string) $out['cookie_list'];

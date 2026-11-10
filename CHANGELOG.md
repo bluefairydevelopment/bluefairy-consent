@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 - 2026-11-10
+
+- Setting `disable_wc_order_attribution` (Settings > Consent, shown only while WooCommerce is active): answers WooCommerce's `woocommerce_feature_order_attribution_enabled` feature check with `no` through `pre_option_`, so WooCommerce registers no Sourcebuster script, no `sbjs_*` cookies and no attribution checkout fields. WooCommerce's stored option is never written. Off by default. (WPMAP-143)
+
 ## 1.1.0 - 2026-11-10
 
 - Consent remembered 182 days (six months) by default. (WPMAP-328 decision 5)

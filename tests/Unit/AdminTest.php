@@ -25,6 +25,7 @@ final class AdminTest extends TestCase {
 
 	public function test_render_shows_every_field_and_the_template_notice(): void {
 		add_action( 'bfconsent_settings_rows', static function () { echo '<tr id="pro-row"></tr>'; } );
+		add_filter( 'bfconsent_woocommerce_active', static fn() => true );
 		$out = $this->capture( [ Admin::class, 'render' ] );
 		foreach ( array_keys( Settings::defaults() ) as $key ) {
 			$this->assertStringContainsString( 'name="bfconsent_settings[' . $key . ']"', $out, $key );

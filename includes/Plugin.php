@@ -20,6 +20,7 @@ final class Plugin {
 	public static function boot(): void {
 		Frontend::register();
 		Admin::register();
+		OrderAttribution::register();
 		/**
 		 * Fires once the free plugin has registered its hooks.
 		 */

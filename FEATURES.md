@@ -11,5 +11,6 @@
 | Reopen: floating button, `[bluefairy_consent_settings]`, `#bfc-settings` | `includes/Frontend.php`, `assets/js/consent.js` |
 | Held scripts (`type="text/plain" data-bfc-category`) | `assets/js/consent.js` |
 | Cookie list (setting `cookie_list`, banner `<details class="bfc-cookies">`, `[bluefairy_consent_cookie_list]`) | `includes/Settings.php`, `includes/Frontend.php` |
+| WooCommerce order attribution off-switch (setting `disable_wc_order_attribution`, filter `pre_option_woocommerce_feature_order_attribution_enabled`) | `includes/OrderAttribution.php` |
 | Settings > Consent | `includes/Admin.php`, `includes/Settings.php` |
 | Hooks for add-ons: `bfconsent_loaded`, `bfconsent_categories`, `bfconsent_config`, `bfconsent_banner_body`, `bfconsent_banner_actions`, `bfconsent_settings_rows`; JS `window.BFConsent`, event `bfconsent:change` | |
