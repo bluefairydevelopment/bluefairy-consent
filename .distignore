@@ -1,0 +1,26 @@
+# What the release zip leaves out. wp-deploy/wp-release.sh applies this list to
+# the built zip (distignore.py) whichever way it was built. readme.txt is the
+# shipped readme; README.md and the raw screenshots are the repository's.
+/.distignore
+/README.md
+/docs/ARCHITECTURE.md
+/phpstan-bootstrap.php
+
+# Only the features guide PDF ships from docs/ (2026-10-28). docs/images/,
+# docs/screenshots/ and every other docs/ file are build inputs or internal
+# notes, not product. Last match wins: the second line re-includes the guide.
+/docs/*
+!/docs/*FeaturesGuide.pdf
+
+# Development files.
+/tests/
+/bin/
+/vendor/
+/composer.json
+/composer.lock
+/phpunit.xml.dist
+/phpstan.neon
+/phpcs.xml.dist
+/FEATURES.md
+/CHANGELOG.md
+/.gitignore

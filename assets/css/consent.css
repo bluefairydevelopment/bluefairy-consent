@@ -1,0 +1,82 @@
+/* BlueFairy Consent banner. Accept and Reject share one style: equal weight. */
+.bfc {
+	--bfc-accent: #1863dc;
+	--bfc-bg: #fff;
+	--bfc-fg: #1f2937;
+	--bfc-muted: #4b5563;
+	--bfc-line: #d1d5db;
+	box-sizing: border-box;
+	font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+	color: var(--bfc-fg);
+}
+.bfc *, .bfc *::before, .bfc *::after { box-sizing: inherit; }
+#bfc-banner {
+	position: fixed;
+	z-index: 2147483000;
+	bottom: 16px;
+	max-width: 440px;
+	width: calc(100% - 32px);
+	max-height: calc(100vh - 32px);
+	overflow: auto;
+	background: var(--bfc-bg);
+	border: 1px solid var(--bfc-line);
+	border-radius: 10px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
+	padding: 20px;
+}
+#bfc-banner[hidden], .bfc-reopen[hidden] { display: none; }
+.bfc--bottom-left { left: 16px; }
+.bfc--bottom-right { right: 16px; }
+#bfc-banner.bfc--bottom { left: 50%; transform: translateX(-50%); max-width: 760px; }
+.bfc-title { font-size: 18px; line-height: 1.3; margin: 0 0 8px; color: var(--bfc-fg); }
+.bfc-title:focus { outline: none; }
+.bfc-message { margin: 0 0 16px; color: var(--bfc-muted); }
+.bfc-message a, .bfc-privacy { color: var(--bfc-accent); text-decoration: underline; }
+.bfc-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.bfc-btn {
+	flex: 1 1 0;
+	min-width: 110px;
+	min-height: 44px;
+	padding: 10px 14px;
+	font: inherit;
+	font-weight: 600;
+	color: #fff;
+	background: var(--bfc-accent);
+	border: 2px solid var(--bfc-accent);
+	border-radius: 6px;
+	cursor: pointer;
+}
+.bfc-btn:hover { filter: brightness(1.08); }
+.bfc-btn:focus-visible, .bfc-reopen:focus-visible, .bfc-settings-link:focus-visible {
+	outline: 3px solid var(--bfc-fg);
+	outline-offset: 2px;
+}
+.bfc-reopen {
+	position: fixed;
+	z-index: 2147482999;
+	bottom: 16px;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	border: 1px solid var(--bfc-line);
+	background: var(--bfc-bg);
+	color: var(--bfc-accent);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+	cursor: pointer;
+	display: grid;
+	place-items: center;
+}
+.bfc-reopen.bfc--bottom { left: 16px; }
+.bfc-settings-link {
+	background: none;
+	border: 0;
+	padding: 0;
+	font: inherit;
+	color: inherit;
+	text-decoration: underline;
+	cursor: pointer;
+}
+@media (prefers-reduced-motion: no-preference) {
+	#bfc-banner { animation: bfc-in .2s ease-out; }
+	@keyframes bfc-in { from { opacity: 0; } to { opacity: 1; } }
+}
