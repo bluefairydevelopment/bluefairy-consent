@@ -24,21 +24,21 @@ final class Settings {
 	 */
 	public static function defaults(): array {
 		return [
-			'title'          => __( 'We respect your privacy', 'bluefairy-consent' ),
-			'message'        => __( 'We use cookies to run this site and, with your permission, to measure how it is used. We use Google Consent Mode, which tells Google tags what you have chosen. Choose Accept All to allow analytics cookies or Reject All to decline everything that is not essential. A list of all the cookies we use is available in Cookie settings, where you can change your mind at any time.', 'bluefairy-consent' ),
-			'accept_label'   => __( 'Accept All', 'bluefairy-consent' ),
-			'reject_label'   => __( 'Reject All', 'bluefairy-consent' ),
-			'settings_label' => __( 'Cookie settings', 'bluefairy-consent' ),
-			'privacy_url'    => '',
-			'position'       => 'bottom-left',
-			'ga4_id'         => '',
-			'gtm_id'         => '',
-			'cookie_days'    => 182,
-			'policy_version' => 1,
-			'reopen_button'  => true,
-			'respect_gpc'    => true,
-			'accent_color'   => '#1863dc',
-			'cookie_list'    => self::default_cookie_list(),
+			'title'                        => __( 'We respect your privacy', 'bluefairy-consent' ),
+			'message'                      => __( 'We use cookies to run this site and, with your permission, to measure how it is used. We use Google Consent Mode, which tells Google tags what you have chosen. Choose Accept All to allow analytics cookies or Reject All to decline everything that is not essential. A list of all the cookies we use is available in Cookie settings, where you can change your mind at any time.', 'bluefairy-consent' ),
+			'accept_label'                 => __( 'Accept All', 'bluefairy-consent' ),
+			'reject_label'                 => __( 'Reject All', 'bluefairy-consent' ),
+			'settings_label'               => __( 'Cookie settings', 'bluefairy-consent' ),
+			'privacy_url'                  => '',
+			'position'                     => 'bottom-left',
+			'ga4_id'                       => '',
+			'gtm_id'                       => '',
+			'cookie_days'                  => 182,
+			'policy_version'               => 1,
+			'reopen_button'                => true,
+			'respect_gpc'                  => true,
+			'accent_color'                 => '#1863dc',
+			'cookie_list'                  => self::default_cookie_list(),
 			'disable_wc_order_attribution' => false,
 		];
 	}
@@ -91,10 +91,11 @@ final class Settings {
 		$out['policy_version'] = max( 1, (int) ( $input['policy_version'] ?? 1 ) );
 		$out['reopen_button']  = ! empty( $input['reopen_button'] );
 		$out['respect_gpc']    = ! empty( $input['respect_gpc'] );
-		$out['disable_wc_order_attribution'] = ! empty( $input['disable_wc_order_attribution'] );
 		$color                 = sanitize_hex_color( (string) ( $input['accent_color'] ?? '' ) );
 		$out['accent_color']   = $color ? $color : '#1863dc';
 		$out['cookie_list']    = isset( $input['cookie_list'] ) ? self::cookies_to_text( self::parse_cookies( (string) $input['cookie_list'] ) ) : (string) $out['cookie_list'];
+
+		$out['disable_wc_order_attribution'] = ! empty( $input['disable_wc_order_attribution'] );
 		return $out;
 	}
 

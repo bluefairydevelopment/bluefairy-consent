@@ -7,8 +7,9 @@
  * anything. When the site owner ticks "Turn off WooCommerce order attribution",
  * this answers WooCommerce's own feature check with "no" for every request:
  * WooCommerce then registers none of the feature (no script, no cookies, no
- * hidden checkout fields). WooCommerce's stored option is never written, so
- * unticking the box restores whatever the site had before.
+ * hidden checkout fields), for every visitor, including those who accept.
+ * This plugin never writes WooCommerce's option; unticking the box hands the
+ * decision back to WooCommerce's own Features setting.
  *
  * @package BlueFairy\Consent
  */
@@ -36,9 +37,19 @@ final class OrderAttribution {
 	 * setting is on.
 	 */
 	public static function register(): void {
-		if ( self::woocommerce_active() && (bool) Settings::get( self::SETTING ) ) {
+		if ( self::woocommerce_active() && self::switched_on() ) {
 			add_filter( 'pre_option_' . self::WC_OPTION, [ self::class, 'feature_off' ] );
 		}
+	}
+
+	/**
+	 * Whether the saved setting is on. Reads the stored option directly:
+	 * Settings::all() builds translated defaults, and translations must not
+	 * load before init.
+	 */
+	public static function switched_on(): bool {
+		$saved = get_option( Settings::OPTION, [] );
+		return is_array( $saved ) && ! empty( $saved[ self::SETTING ] );
 	}
 
 	/**

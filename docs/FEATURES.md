@@ -54,7 +54,7 @@ The server sends the same HTML to every visitor; the browser decides what to sho
 
 ## WooCommerce shops: order attribution
 
-WooCommerce's Order Attribution feature loads a script (Sourcebuster) that sets `sbjs_*` cookies on the first page view, before the visitor has chosen anything. To stop it, tick **Turn off WooCommerce order attribution** under **Settings → Consent**. WooCommerce then loads no attribution script and sets no `sbjs_*` cookies; checkout works as before, and new orders show no Origin. WooCommerce's own Features setting is not changed: while the box is ticked, WooCommerce → Settings → Advanced → Features shows Order Attribution as off, and unticking the box restores what was there.
+WooCommerce's Order Attribution feature loads a script (Sourcebuster) that sets `sbjs_*` cookies on the first page view, before the visitor has chosen anything. To stop it, tick **Turn off WooCommerce order attribution** under **Settings → Consent**. WooCommerce then loads no attribution script and sets no `sbjs_*` cookies; checkout works as before, and new orders show no Origin. It applies to every visitor, including those who accept. This plugin does not write WooCommerce's own Features setting: while the box is ticked, WooCommerce → Settings → Advanced → Features shows Order Attribution as off and changes made there have no effect; unticking the box hands the decision back to that setting.
 
 The row appears only while WooCommerce is active, and is off by default. If you keep attribution on, add the `sbjs_*` cookies to your Cookie list.
 

@@ -23,7 +23,7 @@ BlueFairy Consent shows a small banner the first time someone visits. **Accept A
 * **Page-cache safe.** The server sends the same HTML to every visitor; the browser decides what to show and load. Cloudflare and caching plugins can cache the page.
 * **No CDN and no account.** Everything is served from your own site.
 * **Cookie list.** The banner has a Cookie list that shows every cookie you declare under **Settings → Consent → Cookie list** (name, category, provider, purpose, duration), plus the consent cookie itself. Put the same table on your privacy policy page with `[bluefairy_consent_cookie_list]`. Keep the list complete: the default message tells visitors it lists all cookies.
-* **WooCommerce order attribution off-switch.** WooCommerce's Order Attribution sets `sbjs_*` cookies on the first page view, before the visitor has chosen. On a shop, **Settings → Consent → WooCommerce order attribution** turns it off: no attribution script, no `sbjs_*` cookies, and new orders carry no Origin. WooCommerce's own setting is not changed, so unticking the box restores it. Off by default (attribution keeps working until you tick it); the row appears only while WooCommerce is active.
+* **WooCommerce order attribution off-switch.** WooCommerce's Order Attribution sets `sbjs_*` cookies on the first page view, before the visitor has chosen. On a shop, **Settings → Consent → WooCommerce order attribution** turns it off: no attribution script, no `sbjs_*` cookies, and new orders carry no Origin. It applies to every visitor, including those who accept. This plugin does not write WooCommerce's own setting; unticking the box hands the decision back to it. Off by default (attribution keeps working until you tick it); the row appears only while WooCommerce is active.
 * **Hold your own scripts.** Write `<script type="text/plain" data-bfc-category="analytics">…</script>` (or `data-bfc-src="…"` for an external file) and it runs only once that category is allowed.
 
 The default wording is a template for you to review with your own legal adviser. It is not legal advice. The plugin is provided as is, without warranty; to the extent the law allows, Blue Fairy Development is not liable for any loss arising from its use, including any regulatory finding about your site's consent practices.
@@ -57,7 +57,7 @@ That is WooCommerce's Order Attribution. Tick **Turn off WooCommerce order attri
 == Changelog ==
 
 = 1.2.0 =
-* New setting, shown when WooCommerce is active: **Turn off WooCommerce order attribution**. It stops WooCommerce's Sourcebuster script and its `sbjs_*` cookies, which otherwise appear before consent. Off by default. Checkout is unaffected; new orders have no Origin while it is on.
+* New setting, shown when WooCommerce is active: **Turn off WooCommerce order attribution**. It stops WooCommerce's Sourcebuster script and its `sbjs_*` cookies, which otherwise appear before consent. Off by default. It applies to every visitor, including those who accept. Checkout is unaffected; new orders have no Origin while it is on.
 
 = 1.1.0 =
 * Consent is remembered for 182 days (six months) by default; the range stays 1 to 395.

@@ -52,6 +52,14 @@ final class OrderAttributionTest extends TestCase {
 		$this->assertFalse( has_filter( self::HOOK ) );
 	}
 
+	public function test_switched_on_reads_only_the_stored_option(): void {
+		$this->assertFalse( OrderAttribution::switched_on() );
+		update_option( Settings::OPTION, 'garbage' );
+		$this->assertFalse( OrderAttribution::switched_on() );
+		update_option( Settings::OPTION, [ 'disable_wc_order_attribution' => true ] );
+		$this->assertTrue( OrderAttribution::switched_on() );
+	}
+
 	public function test_woocommerce_active_reads_the_class_by_default(): void {
 		$this->assertSame( class_exists( 'WooCommerce', false ), OrderAttribution::woocommerce_active() );
 		$this->assertSame( 'no', OrderAttribution::feature_off() );
