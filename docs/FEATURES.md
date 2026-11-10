@@ -52,6 +52,12 @@ A browser that sends Global Privacy Control is treated as Reject All, without sh
 
 The server sends the same HTML to every visitor; the browser decides what to show and what to load. Cloudflare and caching plugins can cache your pages as usual.
 
+## WooCommerce shops: order attribution
+
+WooCommerce's Order Attribution feature loads a script (Sourcebuster) that sets `sbjs_*` cookies on the first page view, before the visitor has chosen anything. To stop it, tick **Turn off WooCommerce order attribution** under **Settings → Consent**. WooCommerce then loads no attribution script and sets no `sbjs_*` cookies; checkout works as before, and new orders show no Origin. It applies to every visitor, including those who accept. This plugin does not write WooCommerce's own Features setting: while the box is ticked, WooCommerce → Settings → Advanced → Features shows Order Attribution as off and changes made there have no effect; unticking the box hands the decision back to that setting.
+
+The row appears only while WooCommerce is active, and is off by default. If you keep attribution on, add the `sbjs_*` cookies to your Cookie list.
+
 ## Holding your own scripts
 
 Any script can wait for consent. Write it as
@@ -77,6 +83,7 @@ or, for an external file, `<script type="text/plain" data-bfc-category="analytic
 | Accent colour | Button colour. |
 | Floating settings button | Shows the small reopen button. |
 | Global Privacy Control | Treat GPC as Reject All (on by default). |
+| WooCommerce order attribution | Shown only with WooCommerce. Turns off WooCommerce order attribution and its `sbjs_*` cookies (off by default). |
 
 ## Troubleshooting
 

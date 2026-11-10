@@ -84,11 +84,19 @@ final class Admin {
 		self::row( __( 'Floating settings button', 'bluefairy-consent' ), 'reopen_button', '<label><input type="checkbox" id="bfc-reopen_button" name="' . esc_attr( $name . '[reopen_button]' ) . '" value="1"' . checked( (bool) $s['reopen_button'], true, false ) . '> ' . esc_html__( 'Show a small button that reopens the banner. You can also use the [bluefairy_consent_settings] shortcode or a link to #bfc-settings.', 'bluefairy-consent' ) . '</label>' );
 		self::row( __( 'Global Privacy Control', 'bluefairy-consent' ), 'respect_gpc', '<label><input type="checkbox" id="bfc-respect_gpc" name="' . esc_attr( $name . '[respect_gpc]' ) . '" value="1"' . checked( (bool) $s['respect_gpc'], true, false ) . '> ' . esc_html__( 'Treat a browser GPC signal as Reject All.', 'bluefairy-consent' ) . '</label>' );
 		self::row( __( 'Cookie list', 'bluefairy-consent' ), 'cookie_list', '<textarea class="large-text code" rows="6" id="bfc-cookie_list" name="' . esc_attr( $name . '[cookie_list]' ) . '">' . esc_textarea( (string) $s['cookie_list'] ) . '</textarea><p class="description">' . esc_html__( 'Every cookie your site sets, one per line: name | category | provider | purpose | duration. Shown under Cookie list in the banner and by the [bluefairy_consent_cookie_list] shortcode. The consent cookie is listed automatically. Do not use | inside a field. Keep this list complete: the banner tells visitors it lists all cookies.', 'bluefairy-consent' ) . '</p>' );
+		$attribution = '<input type="checkbox" id="bfc-disable_wc_order_attribution" name="' . esc_attr( $name . '[disable_wc_order_attribution]' ) . '" value="1"' . checked( (bool) $s['disable_wc_order_attribution'], true, false ) . '>';
+		if ( OrderAttribution::woocommerce_active() ) {
+			self::row( __( 'WooCommerce order attribution', 'bluefairy-consent' ), 'disable_wc_order_attribution', '<label>' . $attribution . ' ' . esc_html__( 'Turn off WooCommerce order attribution.', 'bluefairy-consent' ) . '</label><p class="description">' . esc_html__( 'WooCommerce order attribution sets sbjs_* cookies on the first page view, before the visitor has chosen. Tick this to stop it for every visitor, including those who accept: no attribution script, no sbjs_* cookies, and new orders carry no Origin. Checkout is not affected. While this is ticked, WooCommerce > Settings > Advanced > Features shows Order Attribution as off. If you leave attribution on, add the sbjs_* cookies to the Cookie list.', 'bluefairy-consent' ) . '</p>' );
+		}
 		/**
 		 * Extra rows on the settings table (Pro).
 		 */
 		do_action( 'bfconsent_settings_rows' );
 		echo '</table>';
+		if ( ! OrderAttribution::woocommerce_active() && $s['disable_wc_order_attribution'] ) {
+			// Keep the saved choice while WooCommerce is inactive: the row is hidden.
+			echo '<input type="hidden" name="' . esc_attr( $name . '[disable_wc_order_attribution]' ) . '" value="1">';
+		}
 		submit_button();
 		echo '</form></div>';
 	}
