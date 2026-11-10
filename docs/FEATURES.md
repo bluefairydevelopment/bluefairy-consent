@@ -58,6 +58,14 @@ WooCommerce's Order Attribution feature loads a script (Sourcebuster) that sets 
 
 The row appears only while WooCommerce is active, and is off by default. If you keep attribution on, add the `sbjs_*` cookies to your Cookie list.
 
+## Languages
+
+Everything visitors see (the banner title and message, the buttons, the category names and descriptions, and the cookie table) is translated into **German, French and Spanish** and appears in the language set under **Settings → General → Site Language**. The default texts follow that language until you change them under **Settings → Consent**; a text you have changed is shown exactly as you wrote it. The settings screens are in English.
+
+For another language, translate `languages/bluefairy-consent.pot` (for example with Poedit) and save the result as `wp-content/languages/plugins/bluefairy-consent-<locale>.mo`. A translation placed there takes precedence over the bundled one.
+
+The bundled translations follow the English template wording. Review them with your own legal adviser, as you would the English text.
+
 ## Holding your own scripts
 
 Any script can wait for consent. Write it as
@@ -108,6 +116,9 @@ You already have an honest banner. Pro turns it into a full consent manager: vis
 | Consent log (time, policy version, choices, source, user agent, hashed visitor id; no IP address), purged after 6 months by default | Yes | No |
 | CSV export of the log | Yes | No |
 | One-click CookieAdmin importer, plus WP-CLI | Yes | No |
+| YouTube, Vimeo and Google Maps embeds wait behind a placeholder until consent | Yes | No |
+| Region rules: an opt-out notice for the countries you choose (for example the US), opt-in everywhere else | Yes | No |
+| Cookie scanner that proposes Cookie list lines for you to review | Yes | No |
 | 12 months of updates and support | Yes | — |
 
 Without Pro, a visitor who wants analytics but not advertising has no way to say so, and Meta or Hotjar tags added by other plugins run before anyone has chosen.
