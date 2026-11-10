@@ -271,3 +271,24 @@ test( 'without an add-on the first visit still opens the banner (event not cance
 	await expect( page.locator( '#bfc-banner' ) ).toBeVisible();
 	expect( await page.evaluate( () => window.__seen ) ).toBe( 1 );
 } );
+
+test( 'applyDefault is refused under GPC, and a cancelled first visit still gets the banner after 5 s', async ( { page } ) => {
+	const tags = await setup( page );
+	await page.addInitScript( () => document.addEventListener( 'bfconsent:first-visit', ( e ) => e.preventDefault() ) );
+	await page.goto( BASE + '/' );
+	await expect( page.locator( '#bfc-banner' ) ).toBeHidden();
+	await expect( page.locator( '#bfc-banner' ) ).toBeVisible( { timeout: 8000 } );
+	const gpcPage = await page.context().newPage();
+	await gpcPage.route( BASE + '/', ( route ) => route.fulfill( { status: 200, contentType: 'text/html; charset=utf-8', body: cachedHtml } ) );
+	await gpcPage.route( /googletagmanager\.com/, ( r ) => {
+		tags.push( r.request().url() );
+		return r.fulfill( { status: 200, body: '' } );
+	} );
+	await gpcPage.context().clearCookies();
+	await gpcPage.addInitScript( () => Object.defineProperty( navigator, 'globalPrivacyControl', { value: true } ) );
+	await gpcPage.goto( BASE + '/' );
+	expect( await gpcPage.evaluate( () => window.BFConsent.applyDefault( { analytics: true } ) ) ).toBe( false );
+	expect( await gpcPage.evaluate( () => window.BFConsent.granted( 'analytics' ) ) ).toBe( false );
+	await gpcPage.waitForTimeout( 300 );
+	expect( gtagJs( tags ) ).toEqual( [] );
+} );

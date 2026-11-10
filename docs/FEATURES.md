@@ -60,7 +60,7 @@ The row appears only while WooCommerce is active, and is off by default. If you 
 
 ## Languages
 
-Everything visitors see (the banner title and message, the buttons, the category names and descriptions, and the cookie table) is translated into **German, French and Spanish** and appears in the language set under **Settings → General → Site Language**. The default texts follow that language until you change them under **Settings → Consent**; a text you have changed is shown exactly as you wrote it. The settings screens are in English.
+Everything visitors see (the banner title and message, the buttons, the category names and descriptions, the cookie table headings and the consent cookie's row) is translated into **German, French and Spanish** and appears in the language set under **Settings → General → Site Language**. A default text follows that language on a new install, or once you save **Settings → Consent** with it unchanged (a site that saved its settings before 1.3.0 keeps the English text until then); a text you have changed is shown exactly as you wrote it. The settings screens are in English.
 
 For another language, translate `languages/bluefairy-consent.pot` (for example with Poedit) and save the result as `wp-content/languages/plugins/bluefairy-consent-<locale>.mo`. A translation placed there takes precedence over the bundled one.
 

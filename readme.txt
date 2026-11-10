@@ -24,7 +24,7 @@ BlueFairy Consent shows a small banner the first time someone visits. **Accept A
 * **No CDN and no account.** Everything is served from your own site.
 * **Cookie list.** The banner has a Cookie list that shows every cookie you declare under **Settings → Consent → Cookie list** (name, category, provider, purpose, duration), plus the consent cookie itself. Put the same table on your privacy policy page with `[bluefairy_consent_cookie_list]`. Keep the list complete: the default message tells visitors it lists all cookies.
 * **WooCommerce order attribution off-switch.** WooCommerce's Order Attribution sets `sbjs_*` cookies on the first page view, before the visitor has chosen. On a shop, **Settings → Consent → WooCommerce order attribution** turns it off: no attribution script, no `sbjs_*` cookies, and new orders carry no Origin. It applies to every visitor, including those who accept. This plugin does not write WooCommerce's own setting; unticking the box hands the decision back to it. Off by default (attribution keeps working until you tick it); the row appears only while WooCommerce is active.
-* **Translations.** German, French and Spanish are included for everything visitors see; a `.pot` template in `languages/` lets you add others. Default texts follow the site language until you change them in the settings.
+* **Translations.** German, French and Spanish are included for the banner, buttons, categories and cookie table headings (Cookie list lines are shown as you wrote them); a `.pot` template in `languages/` lets you add others. On a new install, or once you save the settings with a default text unchanged, that text follows the site language.
 * **Hold your own scripts.** Write `<script type="text/plain" data-bfc-category="analytics">…</script>` (or `data-bfc-src="…"` for an external file) and it runs only once that category is allowed.
 
 The default wording is a template for you to review with your own legal adviser. It is not legal advice. The plugin is provided as is, without warranty; to the extent the law allows, Blue Fairy Development is not liable for any loss arising from its use, including any regulatory finding about your site's consent practices.
@@ -58,7 +58,7 @@ That is WooCommerce's Order Attribution. Tick **Turn off WooCommerce order attri
 == Changelog ==
 
 = 1.3.0 =
-* Translations: German, French and Spanish for everything visitors see (banner, buttons, categories, cookie table), plus a `.pot` template for other languages. Default texts now follow the site language until you change them; texts you have customised are kept as you wrote them.
+* Translations: German, French and Spanish for what visitors see (banner, buttons, categories, cookie table headings; the lines of your Cookie list are shown as you wrote them), plus a `.pot` template for other languages. On a new install, or once you save the settings with a default text unchanged, that text follows the site language; texts you have customised are kept as you wrote them.
 * For add-ons (BlueFairy Consent Pro 1.3.0 region rules and cookie scanner): `BFConsent.applyDefault()` and a cancelable `bfconsent:first-visit` browser event.
 
 = 1.2.0 =
@@ -75,7 +75,7 @@ That is WooCommerce's Order Attribution. Tick **Turn off WooCommerce order attri
 == Upgrade Notice ==
 
 = 1.3.0 =
-Bundled German, French and Spanish translations. Needed by BlueFairy Consent Pro 1.3.0 for region rules and the cookie scanner.
+Bundled German, French and Spanish translations. BlueFairy Consent Pro 1.3.0 needs this version for region rules and the cookie scanner.
 
 = 1.2.0 =
 WooCommerce shops: a new setting turns off WooCommerce order attribution and its sbjs_* cookies. Nothing changes until you tick it.

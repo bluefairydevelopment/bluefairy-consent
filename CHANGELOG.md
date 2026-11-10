@@ -3,7 +3,7 @@
 ## 1.3.0 - 2026-11-10
 
 - Translations (WPMAP-324): `Domain Path: /languages`, `load_plugin_textdomain()` on `init`, `languages/bluefairy-consent.pot`, and `de_DE`, `fr_FR`, `es_ES` (`.po`, `.mo`, `.l10n.php`) covering the visitor-facing strings; admin screens stay English in this release. Banner texts equal to their default (title, message, Accept, Reject, Cookie settings) are no longer stored on save, so they keep following the site language; customised texts are stored as before.
-- Browser API for add-ons (WPMAP-323, used by Pro 1.3.0 region rules and cookie scanner): `BFConsent.applyDefault(choices, force)` applies choices for the page view without storing them (`granted()` reads them; a stored choice clears them; ignored while a stored choice exists unless `force`), event `bfconsent:default`, and a cancelable `bfconsent:first-visit` fired when there is no stored choice and no GPC signal.
+- Browser API for add-ons (WPMAP-323, used by Pro 1.3.0 region rules and cookie scanner): `BFConsent.applyDefault(choices, force)` applies choices for the page view without storing them (`granted()` reads them; a stored choice clears them; ignored while a stored choice or a GPC signal exists unless `force`); if an add-on cancels `bfconsent:first-visit` and has not opened the banner or applied a default within 5 seconds, the banner opens, event `bfconsent:default`, and a cancelable `bfconsent:first-visit` fired when there is no stored choice and no GPC signal.
 
 ## 1.2.0 - 2026-11-10
 
