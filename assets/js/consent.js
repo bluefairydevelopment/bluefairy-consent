@@ -270,7 +270,8 @@
 			return api.set( {}, source || 'reject' );
 		},
 		applyDefault: function ( choices, force ) {
-			if ( current() && ! force ) {
+			// Without force, a stored choice or a GPC signal wins.
+			if ( ! force && ( current() || gpcOn() ) ) {
 				return false;
 			}
 			defaults = normalise( choices || {} );
@@ -334,7 +335,16 @@
 			showReopen( true );
 		} else if ( gpcOn() ) {
 			api.rejectAll( 'gpc' );
-		} else if ( document.dispatchEvent( new CustomEvent( 'bfconsent:first-visit', { cancelable: true } ) ) ) {
+		} else if ( ! document.dispatchEvent( new CustomEvent( 'bfconsent:first-visit', { cancelable: true } ) ) ) {
+			// An add-on took over. If it has neither opened the banner nor
+			// applied a default after 5 seconds, open it so the visitor can choose.
+			window.setTimeout( function () {
+				var b = banner();
+				if ( ! current() && ! defaults && b && b.hidden ) {
+					api.open();
+				}
+			}, 5000 );
+		} else {
 			api.open();
 			// Opening on load must not steal focus from the page.
 			if ( document.activeElement && document.activeElement.id === 'bfc-title' ) {

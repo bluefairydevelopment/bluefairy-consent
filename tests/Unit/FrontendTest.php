@@ -176,8 +176,8 @@ final class FrontendTest extends TestCase {
 
 	public function test_entry_file_defines_constants_and_hooks_boot(): void {
 		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/bluefairy-consent.php' );
-		$this->assertStringContainsString( "define( 'BFCONSENT_VERSION', '1.2.0' );", $src );
-		$this->assertStringContainsString( 'Version:           1.2.0', $src );
+		$this->assertStringContainsString( "define( 'BFCONSENT_VERSION', '1.3.0' );", $src );
+		$this->assertStringContainsString( 'Version:           1.3.0', $src );
 		$this->assertStringContainsString( "add_action( 'plugins_loaded', [ BlueFairy\\Consent\\Plugin::class, 'boot' ] );", $src );
 	}
 

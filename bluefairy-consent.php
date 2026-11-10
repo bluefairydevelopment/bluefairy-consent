@@ -3,7 +3,7 @@
  * Plugin Name:       BlueFairy Consent
  * Plugin URI:        https://wordpress.bluefairydevelopment.com/product/bluefairy-consent/
  * Description:       Cookie consent banner with Accept and Reject given equal weight, Google Consent Mode v2, Global Privacy Control, and Google Analytics 4 / Tag Manager loaded only after consent. Page-cache safe: the decision is made in the browser. No CDN, no account.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Requires at least: 6.6
  * Requires PHP:      8.1
  * Author:            Blue Fairy Development
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'BFCONSENT_FILE', __FILE__ );
 define( 'BFCONSENT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BFCONSENT_URL', plugin_dir_url( __FILE__ ) );
-define( 'BFCONSENT_VERSION', '1.2.0' );
+define( 'BFCONSENT_VERSION', '1.3.0' );
 
 spl_autoload_register(
 	static function ( string $class_name ): void {
