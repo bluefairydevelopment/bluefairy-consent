@@ -8,9 +8,17 @@
  *   get()                -> stored record {v, c, id, t, s} or null
  *   granted(slug)        -> bool
  *   set(choices, source) -> save a choice ({slug: bool}) and apply it
+ *   applyDefault(choices, force) -> apply choices for this page view only,
+ *                          without storing them (add-ons: region rules,
+ *                          cookie scanner). Ignored while a stored choice
+ *                          exists unless force is true. Returns bool.
  *   acceptAll(source) / rejectAll(source)
  *   open() / close()
  * Event: document 'bfconsent:change' with detail {choices, previous, source, id, version}.
+ * Event: document 'bfconsent:default' with detail {choices} after applyDefault().
+ * Event: document 'bfconsent:first-visit' (cancelable) when there is no stored
+ *   choice and no GPC signal, just before the banner opens. An add-on that
+ *   calls preventDefault() takes over: it must call open() or applyDefault().
  */
 ( function () {
 	'use strict';
@@ -19,6 +27,8 @@
 	var cats = cfg.categories || {};
 	var COOKIE = cfg.cookie || 'bfc_consent';
 	var loaded = {};
+	// Choices applied for this page view without being stored (applyDefault).
+	var defaults = null;
 
 	function slugs() {
 		return Object.keys( cats );
@@ -220,7 +230,8 @@
 		get: current,
 		granted: function ( slug ) {
 			var rec = current();
-			return !! ( cats[ slug ] && ( cats[ slug ].required || ( rec && rec.c[ slug ] === true ) ) );
+			var c = rec ? rec.c : defaults;
+			return !! ( cats[ slug ] && ( cats[ slug ].required || ( c && c[ slug ] === true ) ) );
 		},
 		set: function ( choices, source ) {
 			var prev = current();
@@ -234,6 +245,7 @@
 				g: gpcOn()
 			};
 			writeCookie( rec );
+			defaults = null;
 			var kept = readCookie();
 			slugs().forEach( function ( slug ) {
 				if ( ! next[ slug ] && ( ! prev || prev.c[ slug ] !== false ) ) {
@@ -256,6 +268,15 @@
 		},
 		rejectAll: function ( source ) {
 			return api.set( {}, source || 'reject' );
+		},
+		applyDefault: function ( choices, force ) {
+			if ( current() && ! force ) {
+				return false;
+			}
+			defaults = normalise( choices || {} );
+			apply( defaults );
+			document.dispatchEvent( new CustomEvent( 'bfconsent:default', { detail: { choices: defaults } } ) );
+			return true;
 		},
 		open: function () {
 			var b = banner();
@@ -313,7 +334,7 @@
 			showReopen( true );
 		} else if ( gpcOn() ) {
 			api.rejectAll( 'gpc' );
-		} else {
+		} else if ( document.dispatchEvent( new CustomEvent( 'bfconsent:first-visit', { cancelable: true } ) ) ) {
 			api.open();
 			// Opening on load must not steal focus from the page.
 			if ( document.activeElement && document.activeElement.id === 'bfc-title' ) {

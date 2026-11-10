@@ -210,3 +210,64 @@ test( 'withdraw then re-grant on the same page re-enables GA4', async ( { page }
 	await page.locator( '[data-bfc-action="accept"]' ).click();
 	expect( await page.evaluate( ( id ) => window[ 'ga-disable-' + id ], GA4 ) ).toBe( false );
 } );
+
+// WPMAP-323: hooks the Pro region rules (and cookie scanner) build on.
+test( 'first-visit is cancelable: an add-on can hold the banner and apply defaults for this page view only', async ( { page } ) => {
+	const tags = await setup( page );
+	await page.addInitScript( () => {
+		window.__bfcEvents = [];
+		document.addEventListener( 'bfconsent:first-visit', ( e ) => {
+			window.__bfcEvents.push( 'first-visit' );
+			e.preventDefault();
+		} );
+		document.addEventListener( 'bfconsent:default', ( e ) => window.__bfcEvents.push( 'default:' + JSON.stringify( e.detail.choices ) ) );
+	} );
+	await page.goto( BASE + '/' );
+	await expect.poll( () => page.evaluate( () => window.__bfcEvents.length ) ).toBe( 1 );
+	await page.waitForTimeout( 300 );
+	await expect( page.locator( '#bfc-banner' ) ).toBeHidden();
+	expect( tags ).toEqual( [] );
+
+	expect( await page.evaluate( () => window.BFConsent.applyDefault( { analytics: true } ) ) ).toBe( true );
+	await expect.poll( () => gtagJs( tags ).length ).toBe( 1 );
+	expect( await page.evaluate( () => window.BFConsent.granted( 'analytics' ) ) ).toBe( true );
+	expect( await page.evaluate( () => window.BFConsent.get() ) ).toBeNull();
+	expect( await stored( page ) ).toBeNull();
+	expect( await page.evaluate( () => window.__bfcEvents ) ).toEqual( [ 'first-visit', 'default:{"necessary":true,"analytics":true}' ] );
+	const cmds = await consentCommands( page );
+	expect( cmds[ cmds.length - 1 ] ).toEqual( [ 'update', expect.objectContaining( { analytics_storage: 'granted' } ) ] );
+
+	// Opting out after a default deletes the analytics cookies the default allowed, and is stored.
+	await page.evaluate( () => {
+		document.cookie = '_ga=GA1.1.123.456; Path=/';
+	} );
+	await page.evaluate( () => window.BFConsent.rejectAll() );
+	expect( ( await page.context().cookies() ).map( ( c ) => c.name ) ).not.toContain( '_ga' );
+	expect( ( await stored( page ) ).c.analytics ).toBe( false );
+	expect( await page.evaluate( () => window.BFConsent.granted( 'analytics' ) ) ).toBe( false );
+} );
+
+test( 'applyDefault does not override a stored choice unless forced', async ( { page } ) => {
+	const tags = await setup( page );
+	await page.goto( BASE + '/' );
+	await page.locator( '[data-bfc-action="reject"]' ).click();
+	expect( await page.evaluate( () => window.BFConsent.applyDefault( { analytics: true } ) ) ).toBe( false );
+	expect( await page.evaluate( () => window.BFConsent.granted( 'analytics' ) ) ).toBe( false );
+	await page.waitForTimeout( 300 );
+	expect( gtagJs( tags ) ).toEqual( [] );
+	// force (the cookie scanner) applies for this page view without touching the stored choice.
+	expect( await page.evaluate( () => window.BFConsent.applyDefault( { analytics: true }, true ) ) ).toBe( true );
+	await expect.poll( () => gtagJs( tags ).length ).toBe( 1 );
+	expect( ( await stored( page ) ).c.analytics ).toBe( false );
+} );
+
+test( 'without an add-on the first visit still opens the banner (event not cancelled)', async ( { page } ) => {
+	await setup( page );
+	await page.addInitScript( () => {
+		window.__seen = 0;
+		document.addEventListener( 'bfconsent:first-visit', () => window.__seen++ );
+	} );
+	await page.goto( BASE + '/' );
+	await expect( page.locator( '#bfc-banner' ) ).toBeVisible();
+	expect( await page.evaluate( () => window.__seen ) ).toBe( 1 );
+} );
