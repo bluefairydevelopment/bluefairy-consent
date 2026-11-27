@@ -123,7 +123,7 @@ You already have an honest banner. Pro turns it into a full consent manager: vis
 
 Without Pro, a visitor who wants analytics but not advertising has no way to say so, and Meta or Hotjar tags added by other plugins run before anyone has chosen.
 
-**Get BlueFairy Consent Pro for $25:** https://wordpress.bluefairydevelopment.com/product/bluefairy-consent-pro/
+**Get BlueFairy Consent Pro:** https://wordpress.bluefairydevelopment.com/product/bluefairy-consent-pro/
 
 ## Support
 
